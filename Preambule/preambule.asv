@@ -1,0 +1,36 @@
+clear; close all; clc;
+%% Sallmone Armela && Mony Alexandra | Groupe 5
+
+%% Préambule à la méthode de traitement d un signal de parole bruité par un bruit blanc gaussien : procédure dite d’addition-recouvrement
+
+Fe = 8000;
+Te=1/Fe;
+T=30e-3;
+Lt=T/Te
+% Les signaux de parole sont généralement supposés quasi stationnaires sur des durées de l'ordre de 20 à 40 millisecondes.
+
+% Charger le signal de parole (remplacez le chemin par le vôtre)
+signal_parole=load('fcno03fz.mat');
+
+% Bruiter le signal
+signal_bruite = bruiter_signal(signal_parole.fcno03fz, 15);
+
+recSignal=decomposition(signal_bruite,Lt);
+
+figure;
+subplot(2,2,1);
+plot(signal_parole.fcno03fz,'r');
+title(['Signal de parole original']);
+xlabel('Échantillons');
+ylabel('Amplitude');
+
+subplot(2,2,2);
+plot(signal_bruite,'y');
+
+h
+subplot(2,2,3);
+plot(recSignal,'b');
+title('Signal reconstruit');
+
+
+
