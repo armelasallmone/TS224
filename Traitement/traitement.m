@@ -10,13 +10,8 @@ function [trameReh] = traitement(trame)
     [U, S, V] = svd(Hy);
 
 % 2.Décomposition en valeurs singulières (SVD)
-    seuil=0.8;
-    % Calculer le pourcentage cumulatif des valeurs singulières
-    cumulative_percentage = cumsum(diag(S)) / sum(diag(S));
-
-    % Trouver le premier indice où le pourcentage cumulatif dépasse le seuil
-    k = find(cumulative_percentage >= seuil, 1, 'first');
-         
+    k = sum(diag(S) > 4e+03);
+   
 % 3.Estimation de la matrice de données du signal
     Uk = U(:, 1:k);
     Sk = S(1:k, 1:k);

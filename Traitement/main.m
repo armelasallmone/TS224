@@ -29,6 +29,9 @@ TramesBruite=decomposition(signal_bruite,Lt,nbT);
 % Trames rehaussées:
 
 TramesRehausse=zeros(nbT,Lt);
+% nbT
+% TramesRehausse(160,:)=traitement(TramesBruite(160,:));
+
 for t=1:nbT
     TramesRehausse(t,:)=traitement(TramesBruite(t,:));
 end
