@@ -19,5 +19,5 @@ dsp_correlogram = my_correlogram(white_noise);
 figure;
 
 plot((dsp_correlogram));
-title('corrélogramme d''''un bruit blanc Gaussien');
+title('Corrélogramme d''''un bruit blanc Gaussien');
 

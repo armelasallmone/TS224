@@ -1,9 +1,10 @@
-%% Sallmone Armela & Mony Alexandra
+%% Sallmone Armela & Mony Alexandra | Groupe 5 
 clear;
 close all;
 clc;
 
 %% Bruiter un signal de parole selon un rapport signal à bruit donné
+
 % Charger le signal de parole (remplacez le chemin par le vôtre)
 signal_parole=load('fcno03fz.mat');
 

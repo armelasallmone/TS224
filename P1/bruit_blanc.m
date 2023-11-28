@@ -7,7 +7,7 @@ N = 1000; % nombre d'échantiollons
 average = 0;
 sigma_squared = 1;
 variance = sigma_squared;
-Fs = 1000;
+Fs = 8000;
 f = linspace(-Fs/2, Fs/2, N);
 
 
@@ -42,6 +42,12 @@ autocorrelation_nonBiaise = xcorr(white_noise, 'unbiased');
     dsp_estime = fftshift(fft(autocorrelation_theorique));
 
 
+% Corrélogramme d'un bruit blanc gaussien 
+
+dsp_correlogram = my_correlogram(white_noise);
+
+
+
 %% Affichage 
 
 figure;
@@ -49,16 +55,16 @@ plot(white_noise);
 title("Bruit blanc gaussien: μ = 0 et V = σ²");
 
 figure; 
-subplot(2,2,1);
+subplot(1,3,1);
 plot(autocorrelation_theorique);
 title('Fonction d autocorrélation théorique');
 
-subplot(2,2,2);
+subplot(1,3,2);
 plot(autocorrelation_biaise);
 title('Fonction d autocorrélation estimée: biaisée');
 
 
-subplot(2,2,3);
+subplot(1,3,3);
 plot(autocorrelation_nonBiaise);
 title('Fonction d autocorrélation estimée: non biaisée');
 
@@ -74,4 +80,9 @@ title('Densité spectrale de puissance théorique');
 subplot(2,2,3);
 plot(dsp_estime);
 title('Densité spectrale de puissance estimée');
+
+figure;
+plot((dsp_correlogram));
+title('Corrélogramme d''''un bruit blanc Gaussien');
+
 

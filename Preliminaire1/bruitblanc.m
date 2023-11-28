@@ -29,7 +29,8 @@ ylabel('Autocorrélation');
 % Autocorrélation théorique
 autocorrelation_theorique = variance * exp(-abs(lags) / N);
 subplot(2,1,2);
-stem(lags, autocorrelation_theorique);
+couleur_rose = [1, 0.75, 0.8];
+stem(lags, autocorrelation_theorique,'color', couleur_rose);
 title('Autocorrélation théorique du bruit blanc');
 xlabel('Lags');
 ylabel('Autocorrélation');
