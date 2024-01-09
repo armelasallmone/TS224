@@ -27,16 +27,16 @@ Trames=decomposition(signal_bruite,Lt,nbT);
 recSignal=reconstruction(Trames,Ls,Lt,nbT);
 
 %% Affichage
-subplot(2,1,1);
-plot(signal_parole.fcno03fz, 'r');
-title('Signal de parole original');
-xlabel('Temps');
-ylabel('Amplitude');
+% subplot(2,1,1);
+% plot(signal_parole.fcno03fz, 'r');
+% title('Signal de parole original');
+% xlabel('Temps');
+% ylabel('Amplitude');
 
-subplot(2,1,2);
-plot(signal_bruite, 'r+');
+%subplot(2,1,2);
+plot(signal_bruite, 'b+');
 hold on;
-plot(recSignal, 'kx');
+plot(recSignal, 'gx');
 title('Signal de parole bruité et signal reconstitué');
 xlabel('Temps');
 ylabel('Amplitude');
