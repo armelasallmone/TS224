@@ -1,7 +1,7 @@
 %% Sallmone Armela && Mony Alexandra | Groupe 5
 clear; close all; clc;
 
-%% Méthode de traitement d une trame dMun signal de parole bruité par un bruit blanc gaussien :
+%% Méthode de traitement d une trame d'un signal de parole bruité par un bruit blanc gaussien :
 
 %% Initialisation des paramètres
 % Charger le signal de parole 
@@ -20,18 +20,30 @@ nbT =floor(2*Ls/Lt - 2); % Nombre de Trame
 %% Traitement 
 
 % Bruiter le signal
-RSB=5;
+RSB=10;
+
 [signal_bruite,sigmaB] = bruiter_signal(signal_parole.fcno03fz, RSB);
+
 
 TramesOriginal=decomposition(signal_parole.fcno03fz,Lt,nbT);
 TramesBruite=decomposition(signal_bruite,Lt,nbT);
 
+% Détermination du seuil : 
+
+seuil=0;
+
+for i=1:75
+    tmp1=findseuil(TramesBruite(i,:));    
+    if (tmp1>seuil)
+        seuil=tmp1;
+    end
+end
+ 
 % Trames rehaussées:
-disp(sigmaB);
 TramesRehausse=zeros(nbT,Lt);
 
 for t=1:nbT
-    TramesRehausse(t,:)=traitement(TramesBruite(t,:),sigmaB);
+    TramesRehausse(t,:)=traitement(TramesBruite(t,:),seuil);
 end
 
 % Reconstruction :
@@ -46,7 +58,8 @@ bruit = signal_parole.fcno03fz - signalRehausse';
 puissanceBruit = sum(bruit.^2) / Ls;
 
 % Calcul du RSB en décibels (dB)
-RSB_dB = 10 * log10(puissanceSignalParole / puissanceBruit)
+RSB_dB = 10 * log10(puissanceSignalParole / puissanceBruit);
+
 
 
 %% Affichage
@@ -54,19 +67,18 @@ RSB_dB = 10 * log10(puissanceSignalParole / puissanceBruit)
 % Affichage des 10 premières trames
 figure;
 
-for t = 1:10
-    subplot(5, 2, t);
-    plot((1:Lt)*Te, TramesBruite(t, :), 'r', 'LineWidth', 1.5);
+
+    plot((1:Lt)*Te, TramesBruite(1, :), 'r', 'LineWidth', 1.5);
     hold on;
-    plot((1:Lt)*Te, TramesOriginal(t, :), 'b', 'LineWidth', 1.5);
+    plot((1:Lt)*Te, TramesOriginal(1, :), 'b', 'LineWidth', 1.5);
     hold on;
-    plot((1:Lt)*Te, TramesRehausse(t, :), 'g', 'LineWidth', 1.5);
-    title(['Trame ', num2str(t)]);
+    plot((1:Lt)*Te, TramesRehausse(1, :), 'g', 'LineWidth', 1.5);
+    title(['Trame ', num2str(1)]);
     xlabel('Temps (s)');
     ylabel('Amplitude');
     legend('Parole bruitée', 'Parole originale', 'Parole rehaussée');
     grid on;
-end
+
 
 % Affichage de la représentation temporelle du signal rehaussé dans sa totalité
 

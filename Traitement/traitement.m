@@ -1,4 +1,4 @@
-function [trameReh] = traitement(trame,sigmaB)
+function [trameReh] = traitement(trame,seuil)
 % 1.Construction de la matrice de Hankel
     % Paramètres de la matrice de Hankel 
     N = length(trame);    %Longueur de la trame
@@ -10,7 +10,7 @@ function [trameReh] = traitement(trame,sigmaB)
     [U, S, V] = svd(Hy);
 
 % 2.Décomposition en valeurs singulières (SVD)
-    k = sum(diag(S) > sigmaB*3e1);
+    k = sum(diag(S) > seuil);
    
 % 3.Estimation de la matrice de données du signal
     Uk = U(:, 1:k);
