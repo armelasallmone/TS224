@@ -1,60 +1,69 @@
-%% Sallmone Armela & Mony Alexandra
-%% Groupe 5
-clear;
-close all;
-clc;
 
-%% Periodogramme
-% Paramètres
-moyenne = 0;
-variance = 1;
-N = 1000; % Taille de l'échantillon
+clear; close all; clc;
 
-% Générer le bruit blanc
-bruit_blanc = moyenne + sqrt(variance) * randn(1, N);
+%% Préliminaire 1: bruiter un signal de parole selon un rapport SNR donné
 
-% Périodogramme
-[Pxx, F] = periodogram(bruit_blanc, [], [], 1);
+N = 1000; % nombre d'échantillons
+average = 0;
+sigma_squared = 1;
+Fs = 8000;
+f = linspace(-Fs/2, Fs/2, N);
 
-% Périodogramme de Daniell
-order_daniell = 4; % Ordre de la moyenne de Daniell
-[Pxx_daniell, F_daniell] = pburg(bruit_blanc, order_daniell);
+Nfft = 128;
+L = 10; % Largeur de la fenêtre pour Daniell
+taille_segment = 256; % Taille du segment pour Bartlett
 
-% Périodogramme de Bartlett
-window_bartlett = bartlett(N);
-[Pxx_bartlett, F_bartlett] = periodogram(bruit_blanc, window_bartlett, [], 1);
+% Génération du bruit blanc 
+white_noise = sqrt(sigma_squared) * randn(N,1);
 
-% Périodogramme de Welch
-segment_length = 64; % Longueur du segment
-overlap = 50; % Chevauchement en pourcentage
-[Pxx_welch, F_welch] = pwelch(bruit_blanc, segment_length, overlap, [], 1);
+% Densité spectrale de puissance 
+dsp = sigma_squared * ones(size(f));
 
-% Comparaison avec le spectre de puissance
-[pxx, f] = periodogram(bruit_blanc, [], [], 1);
+% Spectre de puissance d'une réalisation 
+    
+    tf_white_noise = fftshift(fft(white_noise));
+    spectre_puissance = abs(tf_white_noise).^2;
 
-% Tracé des résultats
+% Périodogrammes 
+dsp_daniell = my_daniell(white_noise, L);
+dsp_bartlett = my_Bartlett(white_noise, taille_segment);
+dsp_welch = my_welch(white_noise, Nfft);
+
+% Fréquences associées aux DSP
+f_welch = linspace(-Fs/2, Fs/2, length(dsp_welch));
+f_daniell = linspace(-Fs/2, Fs/2, length(dsp_daniell));
+f_bartlett = linspace(-Fs/2, Fs/2, length(dsp_bartlett));
+
+%% Affichage 
+% Affichage périodogramme & DSP
 figure;
-
-subplot(2,2,1);
-plot(F, 10*log10(Pxx));
-title('Périodogramme');
-xlabel('Fréquence (Hz)');
-ylabel('Puissance (dB)');
-
-subplot(2,2,2);
-plot(F_daniell, 10*log10(Pxx_daniell));
-title('Périodogramme de Daniell');
-xlabel('Fréquence (Hz)');
-ylabel('Puissance (dB)');
-
-subplot(2,2,3);
-plot(F_bartlett, 10*log10(Pxx_bartlett));
-title('Périodogramme de Bartlett');
-xlabel('Fréquence (Hz)');
-ylabel('Puissance (dB)');
-
-subplot(2,2,4);
-plot(F_welch, 10*log10(Pxx_welch));
+subplot(3, 1, 1);
+plot(f_welch, dsp_welch);
+hold on;
+plot(f, dsp, 'r--', 'LineWidth', 1); 
 title('Périodogramme de Welch');
 xlabel('Fréquence (Hz)');
-ylabel('Puissance (dB)');
+ylabel('DSP');
+legend('Périodogramme', 'DSP');
+hold off;
+
+subplot(3, 1, 2);
+plot(f_daniell, dsp_daniell);
+hold on;
+plot(f, dsp, 'r--', 'LineWidth', 1); 
+title('Périodogramme de Daniell');
+xlabel('Fréquence (Hz)');
+ylabel('DSP');
+legend('Périodogramme', 'DSP');
+grid on;
+
+subplot(3, 1, 3);
+plot(f_bartlett, dsp_bartlett);
+hold on;
+plot(f, dsp, 'r--', 'LineWidth', 1);
+title('Périodogramme de Bartlett');
+xlabel('Fréquence (Hz)');
+ylabel('DSP');
+legend('Périodogramme', 'DSP');
+grid on;
+

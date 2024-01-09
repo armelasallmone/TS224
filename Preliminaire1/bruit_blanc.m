@@ -3,90 +3,86 @@ clear; close all; clc;
 
 %% Préliminaire 1: bruiter un signal de parole selon un rapport SNR donné
 
-N = 1000; % nombre d'échantillons 
+N = 1000; % nombre d'échantiollons 
 average = 0;
 sigma_squared = 1;
-
-Fs = 8000; % Fréquence d'échantillonnage 
+variance = sigma_squared;
+Fs = 8000;
 f = linspace(-Fs/2, Fs/2, N);
 
-dirac = zeros(1,N);
-dirac(1) = 1;
 
 % Génération du bruit blanc 
-white_noise = average + sqrt(sigma_squared) * randn(N,1);
+white_noise = sqrt(sigma_squared) * randn(N,1);
 
 % Fonction d'autocorrélation théorique d'un bbg
-autocorrelation_theorique = sigma_squared * dirac;
+autocorrelation_theorique = zeros(1,N);
+center = ceil(N/2);
+autocorrelation_theorique(center) = 1;
 
 % Fonction d'autocorrélation estimée
-    
-    % biaisé 
-    [autocorrelation_biaise,lags_b] = xcorr(white_noise, 'biased');
+autocorrelation_biaise = xcorr(white_noise, 'biased');
+autocorrelation_nonBiaise = xcorr(white_noise, 'unbiased');
 
-    % non biaisé 
-    [autocorrelation_nonBiaise, lags_ub] = xcorr(white_noise, 'unbiased');
 
-% Spectre de puissance d'une réalisation
+% Spectre de puissance d'une réalisation : carcatèrise le processus en moyenne
 
     %Calcul du spectre en fréquence X(f)
     tf_white_noise = fftshift(fft(white_noise));
 
     % Spectre de puissance |X(f)|^2
-    spectre_puissance = abs(tf_white_noise).^2/N;
+    spectre_puissance = abs(tf_white_noise).^2;
+   
 
 % Densité spectrale de puissance: indépendant de la réalisation
     
     % théorique
     dsp_theorique = sigma_squared * ones(1,N);
 
+    % estimée
+    dsp_estime = fftshift(fft(autocorrelation_theorique));
+
+
 % Corrélogramme d'un bruit blanc gaussien 
-dsp_correlogram = my_correlogram(white_noise); % Assurez-vous que my_correlogram est défini ailleurs dans votre code
+
+dsp_correlogram = my_correlogram(white_noise);
+
+
 
 %% Affichage 
 
 figure;
 plot(white_noise);
 title("Bruit blanc gaussien: μ = 0 et V = σ²");
-xlabel('Échantillons');
-ylabel('Amplitude');
 
 figure; 
+subplot(1,3,1);
 plot(autocorrelation_theorique);
-xlim([-N N]);
-title('Fonction d''autocorrélation théorique');
-xlabel('Décalage \tau'); 
-ylabel('Autocorrélation');
+title('Fonction d autocorrélation théorique');
 
-figure; 
-plot(lags_b,autocorrelation_biaise);
-title('Fonction d''autocorrélation estimée: biaisée');
-xlabel('Décalage \tau'); 
-ylabel('Autocorrélation'); 
+subplot(1,3,2);
+plot(autocorrelation_biaise);
+title('Fonction d autocorrélation estimée: biaisée');
 
-figure; 
-plot(lags_ub, autocorrelation_nonBiaise);
-title('Fonction d''autocorrélation estimée: non biaisée');
-xlabel('Décalage \tau');
-ylabel('Autocorrélation');
+
+subplot(1,3,3);
+plot(autocorrelation_nonBiaise);
+title('Fonction d autocorrélation estimée: non biaisée');
 
 figure;
-plot(f, spectre_puissance);
-xlim([-Fs/2 Fs/2]);
-title('Spectre de puissance d''un bruit blanc gaussien');
-xlabel('Fréquence (Hz)');
-ylabel('Puissance');
+subplot(2,2,1);
+plot(f,spectre_puissance);
+title('Spectre de puissance');
 
-figure; 
-plot(f, dsp_theorique);
-xlim([-Fs/2 Fs/2]);
-title('Densité spectrale de puissance d''un bruit blanc gaussien');
-xlabel('Fréquence (Hz)');
-ylabel('DSP');
+subplot(2,2,2);
+plot(f,dsp_theorique);
+title('Densité spectrale de puissance théorique');
+
+subplot(2,2,3);
+plot(dsp_estime);
+title('Densité spectrale de puissance estimée');
 
 figure;
-lags = 0:N-1;
-plot(lags, dsp_correlogram);
-title('Corrélogramme d''un bruit blanc gaussien');
-xlabel('Décalage Temporel');
-ylabel('Auto-corrélation');
+plot((dsp_correlogram));
+title('Corrélogramme d''''un bruit blanc Gaussien');
+
+
